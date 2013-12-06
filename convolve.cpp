@@ -11,8 +11,8 @@
 #include <time.h>
 using namespace std;
 
-#define SWAP(a,b)  tempr=(a);(a)=(b);(b)=tempr
-#define LOG_TWO = 0.693147180559945;
+#define SWAP(a,b)  	tempr=(a);(a)=(b);(b)=tempr
+#define LOG_TWO		0.693147180559945
 
 struct WAV_HEADER {
 	// Header 1
@@ -164,16 +164,16 @@ int main(int argc, char* argv[]) {
 		cout << "Size: " << size << "\n";
 		
 		// initialize buffers
-		double * in_buf1 = new double[size*2];
-		double * in_buf2 = new double[size*2];
+		double * in_buf1 = new double[size+size];
+		double * in_buf2 = new double[size+size];
 		
-		double * ir_buf1 = new double[size*2];
-		double * ir_buf2 = new double[size*2];
+		double * ir_buf1 = new double[size+size];
+		double * ir_buf2 = new double[size+size];
 		
-		double * out_buf1 = new double[size*2];
-		double * out_buf2 = new double[size*2];
+		double * out_buf1 = new double[size+size];
+		double * out_buf2 = new double[size+size];
 
-		for (i = 0; i < size*2; i++) {
+		for (i = 0; i < size+size; i++) {
 			in_buf1[i] = 0.0;
 			in_buf2[i] = 0.0;
 			ir_buf1[i] = 0.0;
@@ -294,13 +294,13 @@ int main(int argc, char* argv[]) {
 		cout << "Largest: " << largest << "\n";
 		
 		// Normalize
-		for (i = 0; i < size*2; i++) {
+		for (i = 0; i < size+size; i++) {
 			in_buf1[i] /= largest;
 			ir_buf1[i] /= largest;
 		}
 		
 		if (irheader.num_channels == 2) {
-			for (i = 0; i < size*2; i++) {
+			for (i = 0; i < size+size; i++) {
 				in_buf2[i] /= largest;
 				ir_buf2[i] /= largest;
 			}
@@ -347,7 +347,7 @@ int main(int argc, char* argv[]) {
 					out_buf2[ii+1] /= size;
 		}
 		
-		for (i = 0; i < size*2; i++)  
+		for (i = 0; i < size+size; i++)  
 		{
 			out_buf1[i] *= largest;
 			out_buf1[i] = round(out_buf1[i]);
