@@ -12,6 +12,7 @@
 using namespace std;
 
 #define SWAP(a,b)  tempr=(a);(a)=(b);(b)=tempr
+#define LOG_TWO = 0.693147180559945;
 
 struct WAV_HEADER {
 	// Header 1
@@ -159,7 +160,7 @@ int main(int argc, char* argv[]) {
 			<< "M (Number of samples) = " << M << "\n\n";
 		
 		// Make the size a power of 2
-		int size = pow(2, ceil(log(N)/log(2)));
+		int size = pow(2, ceil(log(N)/LOG_TWO));
 		cout << "Size: " << size << "\n";
 		
 		// initialize buffers
@@ -190,7 +191,7 @@ int main(int argc, char* argv[]) {
 					fread(&sample, bytes_per_sample, 1, input_file);
 					in_buf1[ii] = (double)sample;
 		
-					if (abs(in_buf1[ii]) >= largest) { largest = abs(in_buf1[ii]); }
+					if (abs(in_buf1[ii]) > largest) { largest = abs(in_buf1[ii]); }
 				}
 			}
 			else {
@@ -198,12 +199,12 @@ int main(int argc, char* argv[]) {
 					fread(&sample, bytes_per_sample, 1, input_file);
 					in_buf1[ii] = (double)sample;
 		
-					if (abs(in_buf1[ii]) >= largest) { largest = abs(in_buf1[ii]); }
+					if (abs(in_buf1[ii]) > largest) { largest = abs(in_buf1[ii]); }
 
 					fread(&sample, bytes_per_sample, 1, input_file);
 					in_buf2[ii] = (double)sample;
 
-					if (abs(in_buf2[ii]) >= largest) { largest = abs(in_buf2[ii]); }
+					if (abs(in_buf2[ii]) > largest) { largest = abs(in_buf2[ii]); }
 				}
 			}
 		}
@@ -214,7 +215,7 @@ int main(int argc, char* argv[]) {
 					fread(&sample, bytes_per_sample, 1, input_file);
 					in_buf1[ii] = (double)sample;
 		
-					if (abs(in_buf1[ii]) >= largest) { largest = abs(in_buf1[ii]); }
+					if (abs(in_buf1[ii]) > largest) { largest = abs(in_buf1[ii]); }
 				}			
 			}
 			else {
@@ -222,12 +223,12 @@ int main(int argc, char* argv[]) {
 					fread(&sample, bytes_per_sample, 1, input_file);
 					in_buf1[ii] = (double)sample;
 		
-					if (abs(in_buf1[ii]) >= largest) { largest = abs(in_buf1[ii]); }
+					if (abs(in_buf1[ii]) > largest) { largest = abs(in_buf1[ii]); }
 
 					fread(&sample, bytes_per_sample, 1, input_file);
 					in_buf2[ii] = (double)sample;
 	
-					if (abs(in_buf2[ii]) >= largest) { largest = abs(in_buf2[ii]); }					
+					if (abs(in_buf2[ii]) > largest) { largest = abs(in_buf2[ii]); }					
 				}
 			}
 		}
@@ -244,7 +245,7 @@ int main(int argc, char* argv[]) {
 					fread(&sample, ir_bytes_per_sample, 1, impulse_file);
 					ir_buf1[ii] = (double)sample;
 					
-					if (abs(ir_buf1[ii]) >= largest) { largest = abs(ir_buf1[ii]); }
+					if (abs(ir_buf1[ii]) > largest) { largest = abs(ir_buf1[ii]); }
 				}			
 			}
 			else {
@@ -252,12 +253,12 @@ int main(int argc, char* argv[]) {
 					fread(&sample, ir_bytes_per_sample, 1, impulse_file);
 					ir_buf1[ii] = (double)sample;
 					
-					if (abs(ir_buf1[ii]) >= largest) { largest = abs(ir_buf1[ii]); }
+					if (abs(ir_buf1[ii]) > largest) { largest = abs(ir_buf1[ii]); }
 					
 					fread(&sample, ir_bytes_per_sample, 1, impulse_file);
 					ir_buf2[ii] = (double)sample;
 					
-					if (abs(ir_buf2[ii]) >= largest) { largest = abs(ir_buf2[ii]); }				
+					if (abs(ir_buf2[ii]) > largest) { largest = abs(ir_buf2[ii]); }
 				}
 			}
 		}
@@ -268,7 +269,7 @@ int main(int argc, char* argv[]) {
 					fread(&sample, ir_bytes_per_sample, 1, impulse_file);
 					ir_buf1[ii] = (double)sample;
 
-					if (abs(ir_buf1[ii]) >= largest) { largest = abs(ir_buf1[ii]); }
+					if (abs(ir_buf1[ii]) > largest) { largest = abs(ir_buf1[ii]); }
 				}
 			}
 			else {
@@ -276,12 +277,12 @@ int main(int argc, char* argv[]) {
 					fread(&sample, ir_bytes_per_sample, 1, impulse_file);
 					ir_buf1[ii] = (double)sample;
 
-					if (abs(ir_buf1[ii]) >= largest) { largest = abs(ir_buf1[ii]); }
+					if (abs(ir_buf1[ii]) > largest) { largest = abs(ir_buf1[ii]); }
 
 					fread(&sample, ir_bytes_per_sample, 1, impulse_file);
 					ir_buf2[ii] = (double)sample;
 
-					if (abs(ir_buf2[ii]) >= largest) { largest = abs(ir_buf2[ii]); }
+					if (abs(ir_buf2[ii]) > largest) { largest = abs(ir_buf2[ii]); }
 				}			
 			}
 		}
