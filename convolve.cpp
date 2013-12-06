@@ -312,11 +312,8 @@ int main(int argc, char* argv[]) {
 		for (i = 0; i < size*2; i++)  
 		{
 			out_buf1[i] *= largest;
-			out_buf2[i] *= largest;
-		}
-				
-		for (i = 0; i < size*2; i++)  {
 			out_buf1[i] = round(out_buf1[i]);
+			out_buf2[i] *= largest;
 			out_buf2[i] = round(out_buf2[i]);
 		}
 		
