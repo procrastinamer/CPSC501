@@ -46,16 +46,16 @@ void four1(double data[], int nn, int isign) {
     j = 1;
 
     for (i = 1; i < n; i += 2) {
-	if (j > i) {
-	    SWAP(data[j], data[i]);
-	    SWAP(data[j+1], data[i+1]);
-	}
-	m = nn;
-	while (m >= 2 && j > m) {
-	    j -= m;
-	    m >>= 1;
-	}
-	j += m;
+		if (j > i) {
+			SWAP(data[j], data[i]);
+			SWAP(data[j+1], data[i+1]);
+		}
+		m = nn;
+		while (m >= 2 && j > m) {
+			j -= m;
+			m >>= 1;
+		}
+		j += m;
     }
 
     mmax = 2;
@@ -69,13 +69,13 @@ void four1(double data[], int nn, int isign) {
 	wi = 0.0;
 	for (m = 1; m < mmax; m += 2) {
 	    for (i = m; i <= n; i += istep) {
-		j = i + mmax;
-		tempr = wr * data[j] - wi * data[j+1];
-		tempi = wr * data[j+1] + wi * data[j];
-		data[j] = data[i] - tempr;
-		data[j+1] = data[i+1] - tempi;
-		data[i] += tempr;
-		data[i+1] += tempi;
+			j = i + mmax;
+			tempr = wr * data[j] - wi * data[j+1];
+			tempi = wr * data[j+1] + wi * data[j];
+			data[j] = data[i] - tempr;
+			data[j+1] = data[i+1] - tempi;
+			data[i] += tempr;
+			data[i+1] += tempi;
 	    }
 	    wr = (wtemp = wr) * wpr - wi * wpi + wr;
 	    wi = wi * wpr + wtemp * wpi + wi;
@@ -88,9 +88,8 @@ int main(int argc, char* argv[]) {
 	if (argc == 4) {
 		cout << "Input: " << argv[1] << "\n"
 			<< "Impulse: " << argv[2] << "\n"
-			<< "Output: " << argv[3] << "\n";
-
-		cout << "Size of WAV_HEADER: " << sizeof(WAV_HEADER) << "\n\n";
+			<< "Output: " << argv[3] << "\n"
+			<< "Size of WAV_HEADER: " << sizeof(WAV_HEADER) << "\n\n";
 
 		int i;
 		int ii;
@@ -113,6 +112,8 @@ int main(int argc, char* argv[]) {
 
 		// Read input header
 		fread(&header, sizeof(WAV_HEADER), 1, input_file);
+		// Read IR header
+		fread(&irheader, sizeof(WAV_HEADER), 1, impulse_file);
 
 		cout << "ChunkID: '" << header.RIFF << "'\n"
 			<< "ChunkSize: " << header.chunk_size << "\n"
@@ -126,16 +127,8 @@ int main(int argc, char* argv[]) {
 			<< "BlockAlign: " << header.block_align << "\n"
 			<< "BitsPerSample: " << header.bits_per_sample << "\n"
 			<< "SubChunk2ID: '" << header.data << "'\n"
-			<< "SubChunk2Size: " << header.subchunk2_size << "\n\n";
-
-		if (header.num_channels > 2) {
-			cout << "Unsupported channel number: " << header.num_channels << "\n";
-		}
-				
-		// Read IR header
-		fread(&irheader, sizeof(WAV_HEADER), 1, impulse_file);
-
-		cout << "ChunkID: '" << irheader.RIFF << "'\n"
+			<< "SubChunk2Size: " << header.subchunk2_size << "\n\n"
+			<< "ChunkID: '" << irheader.RIFF << "'\n"
 			<< "ChunkSize: " << irheader.chunk_size << "\n"
 			<< "Format: '" << irheader.WAVE << "'\n"
 			<< "SubChunk1ID: '" << irheader.fmt << "'\n"
@@ -148,24 +141,22 @@ int main(int argc, char* argv[]) {
 			<< "BitsPerSample: " << irheader.bits_per_sample << "\n"
 			<< "SubChunk2ID: '" << irheader.data << "'\n"
 			<< "SubChunk2Size: " << irheader.subchunk2_size << "\n\n";
-			
-		if (irheader.num_channels > 2) {
-			cout << "Unsupported channel number: " << irheader.num_channels << "\n";
+
+		if (header.num_channels > 2 || irheader.num_channels > 2) {
+			cout << "Unsupported channel number: " << header.num_channels << " or " << header.num_channels << "\n";
 			return -1;
 		}
-		
+	
 		// Calculate buffer sizes
 		size_t bytes_per_sample = header.bits_per_sample / 8;
 		size_t N = header.subchunk2_size / (bytes_per_sample * header.num_channels);
-		
-		cout << "Bytes per sample: " << bytes_per_sample << "\n";
-		cout << "N (Number of samples) = " << N << "\n\n";
-		
 		size_t ir_bytes_per_sample = irheader.bits_per_sample / 8;
 		size_t M = irheader.subchunk2_size / (ir_bytes_per_sample * irheader.num_channels);
-
-		cout << "Bytes per sample: " << ir_bytes_per_sample << "\n";
-		cout << "M (Number of samples) = " << M << "\n\n";
+		
+		cout << "Bytes per sample: " << bytes_per_sample << "\n"
+			<< "N (Number of samples) = " << N << "\n\n"
+			<< "Bytes per sample: " << ir_bytes_per_sample << "\n"
+			<< "M (Number of samples) = " << M << "\n\n";
 		
 		// Make the size a power of 2
 		int size = pow(2, ceil(log(N)/log(2)));
