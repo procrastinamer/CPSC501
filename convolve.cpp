@@ -185,13 +185,21 @@ int main(int argc, char* argv[]) {
 		double largest = 0.0;
 		if (bytes_per_sample == 1) {
 			int8_t sample;
-			for (i = 0, ii = 0; i < N; i++, ii += 2) {
-				fread(&sample, bytes_per_sample, 1, input_file);
-				in_buf1[ii] = (double)sample;
-	
-				if (abs(in_buf1[ii]) >= largest) { largest = abs(in_buf1[ii]); }
+			if (header.num_channels == 1) {
+				for (i = 0, ii = 0; i < N; i++, ii += 2) {
+					fread(&sample, bytes_per_sample, 1, input_file);
+					in_buf1[ii] = (double)sample;
+		
+					if (abs(in_buf1[ii]) >= largest) { largest = abs(in_buf1[ii]); }
+				}
+			}
+			else {
+				for (i = 0, ii = 0; i < N; i++, ii += 2) {
+					fread(&sample, bytes_per_sample, 1, input_file);
+					in_buf1[ii] = (double)sample;
+		
+					if (abs(in_buf1[ii]) >= largest) { largest = abs(in_buf1[ii]); }
 
-				if (header.num_channels == 2) {
 					fread(&sample, bytes_per_sample, 1, input_file);
 					in_buf2[ii] = (double)sample;
 
@@ -201,17 +209,25 @@ int main(int argc, char* argv[]) {
 		}
 		else if (bytes_per_sample == 2) {
 			int16_t sample;
-			for (i = 0, ii = 0; i < N; i++, ii += 2) {
-				fread(&sample, bytes_per_sample, 1, input_file);
-				in_buf1[ii] = (double)sample;
-	
-				if (abs(in_buf1[ii]) >= largest) { largest = abs(in_buf1[ii]); }
-	
-				if (header.num_channels == 2) {
+			if (header.num_channels==1) {
+				for (i = 0, ii = 0; i < N; i++, ii += 2) {
+					fread(&sample, bytes_per_sample, 1, input_file);
+					in_buf1[ii] = (double)sample;
+		
+					if (abs(in_buf1[ii]) >= largest) { largest = abs(in_buf1[ii]); }
+				}			
+			}
+			else {
+				for (i = 0, ii = 0; i < N; i++, ii += 2) {
+					fread(&sample, bytes_per_sample, 1, input_file);
+					in_buf1[ii] = (double)sample;
+		
+					if (abs(in_buf1[ii]) >= largest) { largest = abs(in_buf1[ii]); }
+
 					fread(&sample, bytes_per_sample, 1, input_file);
 					in_buf2[ii] = (double)sample;
 	
-					if (abs(in_buf2[ii]) >= largest) { largest = abs(in_buf2[ii]); }
+					if (abs(in_buf2[ii]) >= largest) { largest = abs(in_buf2[ii]); }					
 				}
 			}
 		}
@@ -223,34 +239,50 @@ int main(int argc, char* argv[]) {
 		// Read IR data
 		if (ir_bytes_per_sample == 1) {
 			int8_t sample;
-			for (i = 0, ii = 0; i < M; i++, ii += 2) {
-				fread(&sample, ir_bytes_per_sample, 1, impulse_file);
-				ir_buf1[ii] = (double)sample;
-				
-				if (abs(ir_buf1[ii]) >= largest) { largest = abs(ir_buf1[ii]); }
-				
-				if (irheader.num_channels == 2) {
+			if (irheader.num_channels == 1) {
+				for (i = 0, ii = 0; i < M; i++, ii += 2) {
+					fread(&sample, ir_bytes_per_sample, 1, impulse_file);
+					ir_buf1[ii] = (double)sample;
+					
+					if (abs(ir_buf1[ii]) >= largest) { largest = abs(ir_buf1[ii]); }
+				}			
+			}
+			else {
+				for (i = 0, ii = 0; i < M; i++, ii += 2) {
+					fread(&sample, ir_bytes_per_sample, 1, impulse_file);
+					ir_buf1[ii] = (double)sample;
+					
+					if (abs(ir_buf1[ii]) >= largest) { largest = abs(ir_buf1[ii]); }
+					
 					fread(&sample, ir_bytes_per_sample, 1, impulse_file);
 					ir_buf2[ii] = (double)sample;
 					
-					if (abs(ir_buf2[ii]) >= largest) { largest = abs(ir_buf2[ii]); }
+					if (abs(ir_buf2[ii]) >= largest) { largest = abs(ir_buf2[ii]); }				
 				}
 			}
 		}
 		else if (ir_bytes_per_sample == 2) {
 			int16_t sample;
-			for (i = 0, ii = 0; i < M; i++, ii += 2) {
-				fread(&sample, ir_bytes_per_sample, 1, impulse_file);
-				ir_buf1[ii] = (double)sample;
+			if (irheader.num_channels == 1) {
+				for (i = 0, ii = 0; i < M; i++, ii += 2) {
+					fread(&sample, ir_bytes_per_sample, 1, impulse_file);
+					ir_buf1[ii] = (double)sample;
 
-				if (abs(ir_buf1[ii]) >= largest) { largest = abs(ir_buf1[ii]); }
+					if (abs(ir_buf1[ii]) >= largest) { largest = abs(ir_buf1[ii]); }
+				}
+			}
+			else {
+				for (i = 0, ii = 0; i < M; i++, ii += 2) {
+					fread(&sample, ir_bytes_per_sample, 1, impulse_file);
+					ir_buf1[ii] = (double)sample;
 
-				if (irheader.num_channels == 2) {
+					if (abs(ir_buf1[ii]) >= largest) { largest = abs(ir_buf1[ii]); }
+
 					fread(&sample, ir_bytes_per_sample, 1, impulse_file);
 					ir_buf2[ii] = (double)sample;
 
 					if (abs(ir_buf2[ii]) >= largest) { largest = abs(ir_buf2[ii]); }
-				}
+				}			
 			}
 		}
 		else {
@@ -263,10 +295,14 @@ int main(int argc, char* argv[]) {
 		// Normalize
 		for (i = 0; i < size*2; i++) {
 			in_buf1[i] /= largest;
-			in_buf2[i] /= largest;
-			
 			ir_buf1[i] /= largest;
-			ir_buf2[i] /= largest;
+		}
+		
+		if (irheader.num_channels == 2) {
+			for (i = 0; i < size*2; i++) {
+				in_buf2[i] /= largest;
+				ir_buf2[i] /= largest;
+			}
 		}
 
 		// Convolve
@@ -274,20 +310,30 @@ int main(int argc, char* argv[]) {
 		
 		clock_t timer = clock();
 		
-		four1(in_buf1-1, size, 1);		
-		if (header.num_channels == 2) { four1(in_buf2-1, size, 1); }
+		four1(in_buf1-1, size, 1);
 		four1(ir_buf1-1, size, 1);
-		if (irheader.num_channels == 2) { four1(ir_buf2-1, size, 1); }
+		if (irheader.num_channels == 2) { 
+			four1(ir_buf2-1, size, 1);
+			four1(in_buf2-1, size, 1);		
+		}
 
 		// Complex multiplication
-		for (i = 0, ii = 0; i < size; i++, ii += 2) {
-			out_buf1[ii] = in_buf1[ii] * ir_buf1[ii] - in_buf1[ii+1] * ir_buf1[ii+1];
-			out_buf1[ii+1] = in_buf1[ii] * ir_buf1[ii+1] + in_buf1[ii+1] * ir_buf1[ii];
-			if (header.num_channels == 2) {
+		if (header.num_channels == 1) {
+			for (i = 0, ii = 0; i < size; i++, ii += 2) {
+				out_buf1[ii] = in_buf1[ii] * ir_buf1[ii] - in_buf1[ii+1] * ir_buf1[ii+1];
+				out_buf1[ii+1] = in_buf1[ii] * ir_buf1[ii+1] + in_buf1[ii+1] * ir_buf1[ii];
+			}
+		}
+		else {
+			for (i = 0, ii = 0; i < size; i++, ii += 2) {
+				out_buf1[ii] = in_buf1[ii] * ir_buf1[ii] - in_buf1[ii+1] * ir_buf1[ii+1];
+				out_buf1[ii+1] = in_buf1[ii] * ir_buf1[ii+1] + in_buf1[ii+1] * ir_buf1[ii];
+
 				out_buf2[ii] = in_buf2[ii] * ir_buf2[ii] - in_buf2[ii+1] * ir_buf2[ii+1];
 				out_buf2[ii+1] = in_buf2[ii] * ir_buf2[ii+1] + in_buf2[ii+1] * ir_buf2[ii];
 			}
 		}
+		
 		
 		four1(out_buf1-1, size, -1);
 		four1(out_buf2-1, size, -1);
@@ -318,23 +364,37 @@ int main(int argc, char* argv[]) {
 		
 		if (bytes_per_sample == 1) {
 			int8_t sample;
-			for (i = 0, ii = 0; i < N; i++, ii +=2) {
-				sample = out_buf1[ii];
-				fwrite(&sample, bytes_per_sample, 1, output_file);
-				if (header.num_channels == 2) {
-					sample = out_buf2[ii];
+			if (header.num_channels == 1) {
+				for (i = 0, ii = 0; i < N; i++, ii +=2) {
+					sample = out_buf1[ii];
 					fwrite(&sample, bytes_per_sample, 1, output_file);
 				}
+			}
+			else {
+				for (i = 0, ii = 0; i < N; i++, ii +=2) {
+					sample = out_buf1[ii];
+					fwrite(&sample, bytes_per_sample, 1, output_file);
+					
+					sample = out_buf2[ii];
+					fwrite(&sample, bytes_per_sample, 1, output_file);
+				}			
 			}
 		}
 		else if (bytes_per_sample == 2) {
 			int16_t sample;
-			for (i = 0, ii = 0; i < N; i++, ii +=2) {
-				sample = out_buf1[ii];
-				fwrite(&sample, bytes_per_sample, 1, output_file);
-				if (header.num_channels == 2) {
-					sample = out_buf2[ii];
+			if (header.num_channels == 1) {
+				for (i = 0, ii = 0; i < N; i++, ii +=2) {
+					sample = out_buf1[ii];
 					fwrite(&sample, bytes_per_sample, 1, output_file);
+				}			
+			}
+			else {
+				for (i = 0, ii = 0; i < N; i++, ii +=2) {
+					sample = out_buf1[ii];
+					fwrite(&sample, bytes_per_sample, 1, output_file);
+					
+					sample = out_buf2[ii];
+					fwrite(&sample, bytes_per_sample, 1, output_file);				
 				}
 			}
 		}
